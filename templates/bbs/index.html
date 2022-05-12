@@ -1,0 +1,30 @@
+{% extends "bbs/base.html" %}
+
+
+
+
+{% block content_area %}
+<form method="POST">
+    {% csrf_token %}
+    <input type="text" name="name">
+    <input id="lat_input" type="text" name="lat" placeholder="緯度" required maxlength=9>
+    <input id="lon_input" type="text" name="lon" placeholder="経度" required maxlength=9>
+    <input type="submit" value="送信">
+</form>
+
+
+{% for shop in shops %}
+<div class="border">
+    <div>{{ shop.name }}</div>
+
+    <div>レビュー数:({{ shop.review_count }})</div>
+
+    <a class="btn btn-outline-primary" href="{% url 'bbs:single' shop.id %}">詳細</a>
+</div>
+{% endfor %}
+
+{% endblock %}
+
+
+
+

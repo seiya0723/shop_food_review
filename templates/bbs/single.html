@@ -1,0 +1,83 @@
+{% extends "bbs/base.html" %}
+
+{% block content_area %}
+
+{% for shop in shops %}
+<div class="border">
+    <div>{{ shop.name }}</div>
+</div>
+{% endfor %}
+
+
+<h2>レビュー投稿フォーム</h2>
+
+
+{# TODO:ここでIPアドレスのチェックをする。 #}
+{% if request.META.REMOTE_ADDR %}
+<div>あなたのグローバルIPアドレス:『{{ request.HTTP_X_FORWARDED_FOR }}』</div>
+{% else %}
+<div>あなたのグローバルIPアドレス:『{{ request.META.REMOTE_ADDR }}』</div>
+{% endif %}
+
+{#  enctype="multipart/form-data" がないとファイルがアップロードされない #}
+<form action="" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <select name="star">
+        <option value="">星を入力してください</option>
+        <option value="1">★</option>
+        <option value="2">★★</option>
+        <option value="3">★★★</option>
+        <option value="4">★★★★</option>
+        <option value="5">★★★★★</option>
+    </select>
+
+    <textarea class="form-control" name="comment" maxlength="1000"></textarea>
+    <input type="file" name="image">
+
+    {# 利用規約のようなものを書いておき、確認をした上で送信させる。IPアドレス記録と表示の了承を得る #}
+
+    <input class="form-control" type="submit" value="送信">
+</form>
+
+
+
+
+<h2>投稿されたレビュー</h2>
+
+{# ここに投稿されたレビューを書く #}
+{% for review in reviews %}
+
+<div class="border">
+
+    {% if review.approval == True %}
+    <div>{{ review.dt }}</div>
+    <div>{{ review.comment }}</div>
+
+    <div style="font-size:0;">
+    {% with range=''|center:review.star %}
+    {% for x in range %}
+    <i class="fas fa-star"></i>
+    {% endfor %}
+    {% endwith %}
+    </div>
+
+    <div>星の数:{{ review.star }}</div>
+
+
+    {% if review.image %}
+    <div><img src="{{ review.image.url }}" alt="投稿画像"></div>
+    {% endif %}
+
+    <div>IPアドレス:{{ review.ip }}</div>
+    {% else %}
+    <div>{{ review.dt }}</div>
+    <div>この投稿は承認待ちです。</div>
+    <div>IPアドレス:{{ review.ip }}</div>
+    {% endif %}
+</div>
+{% endfor %}
+
+
+{% endblock %}
+
+
